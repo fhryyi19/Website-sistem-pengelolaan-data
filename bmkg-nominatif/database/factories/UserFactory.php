@@ -1,0 +1,31 @@
+<?php
+
+namespace Database\Factories;
+
+use App\Models\Role;
+use App\Models\User;
+use Illuminate\Database\Eloquent\Factories\Factory;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
+
+/**
+ * @extends Factory<User>
+ */
+class UserFactory extends Factory
+{
+    protected static ?string $password;
+
+    public function definition(): array
+    {
+        return [
+            'role_id'        => Role::where('name', 'user')->first()?->id ?? 2,
+            'name'           => fake()->name(),
+            'username'       => fake()->unique()->userName(),
+            'email'          => fake()->unique()->safeEmail(),
+            'nip'            => fake()->unique()->numerify('19##########00#'),
+            'password'       => static::$password ??= Hash::make('password'),
+            'is_active'      => true,
+            'remember_token' => Str::random(10),
+        ];
+    }
+}
