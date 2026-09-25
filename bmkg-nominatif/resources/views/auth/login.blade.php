@@ -197,6 +197,17 @@
         <div class="login-card">
             <form method="POST" action="{{ route('login') }}">
                 @csrf
+
+                @if ($errors->any())
+                    <div style="background-color: #fee2e2; border-left: 4px solid #ef4444; color: #b91c1c; padding: 12px; margin-bottom: 20px; border-radius: 4px; font-size: 13px;">
+                        <ul style="list-style-type: disc; margin-left: 20px;">
+                            @foreach ($errors->all() as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                @endif
+
                 <div class="form-group">
                     <label for="login">Username / Email</label>
                     <input type="text" id="login" name="login" required autofocus>

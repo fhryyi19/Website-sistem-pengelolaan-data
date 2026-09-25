@@ -23,6 +23,16 @@
             <form method="POST" action="{{ route('register') }}" class="space-y-4">
                 @csrf
 
+                @if ($errors->any())
+                    <div class="p-3 mb-4 text-sm text-red-800 rounded-lg bg-red-50 border-l-4 border-red-500">
+                        <ul class="list-disc pl-5">
+                            @foreach ($errors->all() as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                @endif
+
                 <div>
                     <label class="block text-xs font-semibold text-slate-700 mb-1.5 ml-1">Nama Lengkap</label>
                     <input type="text" name="name" value="{{ old('name') }}" required class="w-full h-12 px-5 text-sm bg-white/50 border border-slate-200 rounded-2xl focus:ring-2 focus:ring-blue-500/20 outline-none transition-all">
