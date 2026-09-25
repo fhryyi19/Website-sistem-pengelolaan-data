@@ -27,7 +27,7 @@ class UserService
                 'name'      => $data['name'],
                 'email'     => strtolower($data['email']),
                 'username'  => strtolower($data['username']),
-                'nip'       => $data['nip'] ?? null,
+                'nip'       => !empty($data['nip']) ? $data['nip'] : null,
                 'role_id'   => $data['role_id'],
                 'password'  => Hash::make($data['password']),
                 'is_active' => $data['is_active'] ?? true,
@@ -56,7 +56,7 @@ class UserService
                 'name'      => $data['name'],
                 'email'     => strtolower($data['email']),
                 'username'  => strtolower($data['username']),
-                'nip'       => $data['nip'] ?? null,
+                'nip'       => !empty($data['nip']) ? $data['nip'] : null,
                 'role_id'   => $data['role_id'],
                 'is_active' => $data['is_active'] ?? $user->is_active,
             ];

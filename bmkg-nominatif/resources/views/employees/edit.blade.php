@@ -381,7 +381,7 @@
                                 <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V8a2 2 0 00-2-2h-5m-4 0V5a2 2 0 114 0v1m-4 0a2 2 0 104 0m-5 8a2 2 0 100-4 2 2 0 000 4zm0 0c1.306 0 2.417.835 2.83 2M9 14a3.001 3.001 0 00-2.83 2"/></svg>
                             </span>
                             <input type="text" id="nip" name="nip" value="{{ old('nip', $employee->nip) }}" required
-                                   maxlength="18" placeholder="18 digit NIP"
+                                   maxlength="25" placeholder="18 digit NIP"
                                    class="ep-input mono {{ $errors->has('nip') ? 'is-error' : '' }}">
                         </div>
                         @error('nip')
@@ -622,13 +622,47 @@
                 </div>
 
                 <div class="ep-grid-2">
+                    {{-- Visual Quick Status Category Pills --}}
+                    <div class="col-span-2 mb-2 p-3.5 rounded-xl border border-slate-200 bg-slate-50/50">
+                        <label class="ep-label text-xs font-bold text-slate-700 mb-2 block">Pilih Kategori Status (Aktif / Pensiun / Nonaktif):</label>
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                            <button type="button" onclick="selectStatusByCategory('PNS')" class="flex items-center justify-center gap-2 p-2.5 rounded-lg border border-slate-200 bg-white hover:bg-emerald-50 hover:border-emerald-300 text-xs font-bold text-slate-700 transition">
+                                <span class="h-2.5 w-2.5 rounded-full bg-emerald-500 shrink-0"></span>
+                                <span>Aktif (PNS / CPNS / PPPK)</span>
+                            </button>
+                            <button type="button" onclick="selectStatusByCategory('PENSIUN')" class="flex items-center justify-center gap-2 p-2.5 rounded-lg border border-slate-200 bg-white hover:bg-amber-50 hover:border-amber-300 text-xs font-bold text-slate-700 transition">
+                                <span class="h-2.5 w-2.5 rounded-full bg-amber-500 shrink-0"></span>
+                                <span>Pensiun</span>
+                            </button>
+                            <button type="button" onclick="selectStatusByCategory('NONAKTIF')" class="flex items-center justify-center gap-2 p-2.5 rounded-lg border border-slate-200 bg-white hover:bg-rose-50 hover:border-rose-300 text-xs font-bold text-slate-700 transition">
+                                <span class="h-2.5 w-2.5 rounded-full bg-rose-500 shrink-0"></span>
+                                <span>Nonaktif</span>
+                            </button>
+                        </div>
+                    </div>
+
                     {{-- Status Kepegawaian --}}
                     <div class="ep-field">
                         <label for="employment_status_id" class="ep-label">
                             Status Kepegawaian <span class="required">*</span>
                         </label>
                         <select id="employment_status_id" name="employment_status_id" required class="ep-select {{ $errors->has('employment_status_id') ? 'is-error' : '' }}">
-                            @foreach ($employmentStatuses as $es)
+                            <optgroup label="🟢 STATUS AKTIF">
+                                @foreach ($employmentStatuses->whereIn('code', ['PNS', 'CPNS', 'PPPK']) as $es)
+                                    <option value="{{ $es->id }}" {{ old('employment_status_id', $employee->employment_status_id) == $es->id ? 'selected' : '' }}>Aktif - {{ $es->name }}</option>
+                                @endforeach
+                            </optgroup>
+                            <optgroup label="🟡 STATUS PENSIUN">
+                                @foreach ($employmentStatuses->where('code', 'PENSIUN') as $es)
+                                    <option value="{{ $es->id }}" {{ old('employment_status_id', $employee->employment_status_id) == $es->id ? 'selected' : '' }}>Pensiun - {{ $es->name }}</option>
+                                @endforeach
+                            </optgroup>
+                            <optgroup label="🔴 STATUS NONAKTIF">
+                                @foreach ($employmentStatuses->whereIn('code', ['NONAKTIF', 'HONORER']) as $es)
+                                    <option value="{{ $es->id }}" {{ old('employment_status_id', $employee->employment_status_id) == $es->id ? 'selected' : '' }}>Nonaktif - {{ $es->name }}</option>
+                                @endforeach
+                            </optgroup>
+                            @foreach ($employmentStatuses->whereNotIn('code', ['PNS', 'CPNS', 'PPPK', 'PENSIUN', 'NONAKTIF', 'HONORER']) as $es)
                                 <option value="{{ $es->id }}" {{ old('employment_status_id', $employee->employment_status_id) == $es->id ? 'selected' : '' }}>{{ $es->name }}</option>
                             @endforeach
                         </select>
@@ -830,6 +864,25 @@
 
         // Scroll to top of form area
         document.getElementById('ep-form').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+    function selectStatusByCategory(cat) {
+        const select = document.getElementById('employment_status_id');
+        if (!select) return;
+        
+        for (let i = 0; i < select.options.length; i++) {
+            const optText = select.options[i].text.toUpperCase();
+            if (cat === 'PNS' && (optText.includes('PNS') || optText.includes('AKTIF'))) {
+                select.selectedIndex = i;
+                break;
+            } else if (cat === 'PENSIUN' && (optText.includes('PENSIUN'))) {
+                select.selectedIndex = i;
+                break;
+            } else if (cat === 'NONAKTIF' && (optText.includes('NONAKTIF') || optText.includes('HONORER'))) {
+                select.selectedIndex = i;
+                break;
+            }
+        }
     }
 
     // Auto-open tab with errors on load

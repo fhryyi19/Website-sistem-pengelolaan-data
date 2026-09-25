@@ -2,7 +2,7 @@
     <x-slot name="title">User Management</x-slot>
 
     <!-- Header & Action -->
-    <div class="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4" x-data="{ createModal: false }">
+    <div class="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4" x-data="{ createModal: {{ ($errors->any() && !old('_method')) ? 'true' : 'false' }} }">
         <div>
             <h1 class="text-2xl font-bold text-[#1d1d1f] tracking-tight apple-tight">User Management</h1>
             <p class="text-xs text-[#7a7a7a] mt-1">Kelola pengguna sistem, peran (role), dan hak akses aplikasi.</p>
@@ -16,49 +16,71 @@
 
         <!-- Modal Tambah User -->
         <div x-show="createModal" class="fixed inset-0 bg-black/40 z-50 flex items-center justify-center p-4" x-cloak>
-            <div @click.outside="createModal = false" class="bg-white rounded-3xl max-w-lg w-full p-6 sm:p-8 space-y-6 shadow-xl">
-                <h3 class="text-lg font-bold text-[#1d1d1f]">Tambah User Baru</h3>
+            <div @click.outside="createModal = false" class="bg-white rounded-3xl max-w-lg w-full p-6 sm:p-8 space-y-6 shadow-xl max-h-[90vh] overflow-y-auto">
+                <div class="flex items-center justify-between">
+                    <h3 class="text-lg font-bold text-[#1d1d1f]">Tambah User Baru</h3>
+                    <button type="button" @click="createModal = false" class="text-gray-400 hover:text-gray-600 text-lg">&times;</button>
+                </div>
 
                 <form method="POST" action="{{ route('users.store') }}" class="space-y-4 text-xs">
                     @csrf
                     <div>
-                        <label class="block font-medium text-[#1d1d1f] mb-1">Nama Lengkap</label>
-                        <input type="text" name="name" required class="w-full h-10 px-4 border border-[#e0e0e0] rounded-xl focus:ring-2 focus:ring-[#0066cc]">
+                        <label class="block font-medium text-[#1d1d1f] mb-1">Nama Lengkap <span class="text-red-500">*</span></label>
+                        <input type="text" name="name" value="{{ old('name') }}" required class="w-full h-10 px-4 border @error('name') border-red-500 @else border-[#e0e0e0] @enderror rounded-xl focus:ring-2 focus:ring-[#0066cc]" placeholder="Contoh: Budi Santoso">
+                        @error('name')
+                            <p class="text-[11px] text-red-500 mt-1">{{ $message }}</p>
+                        @enderror
                     </div>
                     <div>
-                        <label class="block font-medium text-[#1d1d1f] mb-1">Username</label>
-                        <input type="text" name="username" required class="w-full h-10 px-4 border border-[#e0e0e0] rounded-xl focus:ring-2 focus:ring-[#0066cc]">
+                        <label class="block font-medium text-[#1d1d1f] mb-1">Username <span class="text-red-500">*</span></label>
+                        <input type="text" name="username" value="{{ old('username') }}" required class="w-full h-10 px-4 border @error('username') border-red-500 @else border-[#e0e0e0] @enderror rounded-xl focus:ring-2 focus:ring-[#0066cc]" placeholder="Contoh: budi_santoso">
+                        @error('username')
+                            <p class="text-[11px] text-red-500 mt-1">{{ $message }}</p>
+                        @enderror
                     </div>
                     <div>
-                        <label class="block font-medium text-[#1d1d1f] mb-1">Alamat Email</label>
-                        <input type="email" name="email" required class="w-full h-10 px-4 border border-[#e0e0e0] rounded-xl focus:ring-2 focus:ring-[#0066cc]">
+                        <label class="block font-medium text-[#1d1d1f] mb-1">Alamat Email <span class="text-red-500">*</span></label>
+                        <input type="email" name="email" value="{{ old('email') }}" required class="w-full h-10 px-4 border @error('email') border-red-500 @else border-[#e0e0e0] @enderror rounded-xl focus:ring-2 focus:ring-[#0066cc]" placeholder="Contoh: budi@bmkg.go.id">
+                        @error('email')
+                            <p class="text-[11px] text-red-500 mt-1">{{ $message }}</p>
+                        @enderror
                     </div>
                     <div>
                         <label class="block font-medium text-[#1d1d1f] mb-1">NIP (Opsional)</label>
-                        <input type="text" name="nip" class="w-full h-10 px-4 border border-[#e0e0e0] rounded-xl font-mono focus:ring-2 focus:ring-[#0066cc]">
+                        <input type="text" name="nip" value="{{ old('nip') }}" class="w-full h-10 px-4 border @error('nip') border-red-500 @else border-[#e0e0e0] @enderror rounded-xl font-mono focus:ring-2 focus:ring-[#0066cc]" placeholder="19XXXXXXXXXXXXXX">
+                        @error('nip')
+                            <p class="text-[11px] text-red-500 mt-1">{{ $message }}</p>
+                        @enderror
                     </div>
                     <div>
-                        <label class="block font-medium text-[#1d1d1f] mb-1">Role / Peran</label>
-                        <select name="role_id" required class="w-full h-10 px-4 border border-[#e0e0e0] rounded-xl focus:ring-2 focus:ring-[#0066cc]">
+                        <label class="block font-medium text-[#1d1d1f] mb-1">Role / Peran <span class="text-red-500">*</span></label>
+                        <select name="role_id" required class="w-full h-10 px-4 border @error('role_id') border-red-500 @else border-[#e0e0e0] @enderror rounded-xl focus:ring-2 focus:ring-[#0066cc]">
+                            <option value="">-- Pilih Role --</option>
                             @foreach ($roles as $role)
-                                <option value="{{ $role->id }}">{{ $role->label }}</option>
+                                <option value="{{ $role->id }}" {{ old('role_id') == $role->id ? 'selected' : '' }}>{{ $role->label }}</option>
                             @endforeach
                         </select>
+                        @error('role_id')
+                            <p class="text-[11px] text-red-500 mt-1">{{ $message }}</p>
+                        @enderror
                     </div>
-                    <div class="grid grid-cols-2 gap-4">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div>
-                            <label class="block font-medium text-[#1d1d1f] mb-1">Password</label>
-                            <input type="password" name="password" required class="w-full h-10 px-4 border border-[#e0e0e0] rounded-xl focus:ring-2 focus:ring-[#0066cc]">
+                            <label class="block font-medium text-[#1d1d1f] mb-1">Password <span class="text-red-500">*</span></label>
+                            <input type="password" name="password" required class="w-full h-10 px-4 border @error('password') border-red-500 @else border-[#e0e0e0] @enderror rounded-xl focus:ring-2 focus:ring-[#0066cc]" placeholder="Minimal 8 karakter">
+                            @error('password')
+                                <p class="text-[11px] text-red-500 mt-1">{{ $message }}</p>
+                            @enderror
                         </div>
                         <div>
-                            <label class="block font-medium text-[#1d1d1f] mb-1">Konfirmasi Password</label>
-                            <input type="password" name="password_confirmation" required class="w-full h-10 px-4 border border-[#e0e0e0] rounded-xl focus:ring-2 focus:ring-[#0066cc]">
+                            <label class="block font-medium text-[#1d1d1f] mb-1">Konfirmasi Password <span class="text-red-500">*</span></label>
+                            <input type="password" name="password_confirmation" required class="w-full h-10 px-4 border border-[#e0e0e0] rounded-xl focus:ring-2 focus:ring-[#0066cc]" placeholder="Ulangi password">
                         </div>
                     </div>
 
                     <div class="flex justify-end gap-3 pt-4 border-t border-gray-100">
-                        <button type="button" @click="createModal = false" class="h-10 px-5 bg-gray-100 rounded-full font-medium">Batal</button>
-                        <button type="submit" class="h-10 px-6 bg-[#0066cc] text-white rounded-full font-medium">Simpan User</button>
+                        <button type="button" @click="createModal = false" class="h-10 px-5 bg-gray-100 hover:bg-gray-200 rounded-full font-medium transition-colors">Batal</button>
+                        <button type="submit" class="h-10 px-6 bg-[#0066cc] hover:bg-[#0071e3] text-white rounded-full font-medium transition-colors">Simpan User</button>
                     </div>
                 </form>
             </div>

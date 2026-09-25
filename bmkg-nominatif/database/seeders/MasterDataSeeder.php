@@ -42,6 +42,7 @@ class MasterDataSeeder extends Seeder
             ['code' => 'PPPK',  'name' => 'Pegawai Pemerintah dengan Perjanjian Kerja', 'created_at' => $now, 'updated_at' => $now],
             ['code' => 'HONORER','name' => 'Pegawai Honorer',               'created_at' => $now, 'updated_at' => $now],
             ['code' => 'PENSIUN','name' => 'Pensiunan',                     'created_at' => $now, 'updated_at' => $now],
+            ['code' => 'NONAKTIF','name' => 'Nonaktif / Lainnya',           'created_at' => $now, 'updated_at' => $now],
         ]);
 
         // Educations

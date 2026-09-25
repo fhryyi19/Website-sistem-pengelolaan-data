@@ -6,7 +6,9 @@ use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\ExportController;
 use App\Http\Controllers\MasterDataController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\QrAccessController;
 use App\Http\Controllers\RoleController;
+use App\Http\Controllers\SalaryHistoryController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
@@ -35,17 +37,35 @@ Route::middleware(['auth', 'active.user', 'last.login'])->group(function () {
     Route::put('/employees/{id}', [EmployeeController::class, 'update'])->name('employees.update');
     Route::delete('/employees/{id}', [EmployeeController::class, 'destroy'])->name('employees.destroy');
 
+    // Riwayat Kenaikan Gaji
+    Route::get('/salary-history', [SalaryHistoryController::class, 'index'])->name('salary-history.index');
+
     // Employee History Sub-resources
     Route::post('/employees/{id}/educations', [EmployeeController::class, 'storeEducation'])->name('employees.educations.store');
     Route::post('/employees/{id}/ranks', [EmployeeController::class, 'storeRank'])->name('employees.ranks.store');
     Route::post('/employees/{id}/positions', [EmployeeController::class, 'storePosition'])->name('employees.positions.store');
     Route::post('/employees/{id}/families', [EmployeeController::class, 'storeFamily'])->name('employees.families.store');
+    Route::post('/employees/{id}/salary-history', [EmployeeController::class, 'storeSalaryHistory'])->name('employees.salary-history.store');
+    Route::post('/employees/{id}/salary-history/import-pdf', [EmployeeController::class, 'importSalaryPdf'])->name('employees.salary-history.import-pdf');
+    Route::delete('/employees/{employeeId}/salary-history/{historyId}', [EmployeeController::class, 'destroySalaryHistory'])->name('employees.salary-history.destroy');
 
     // Export Excel
     Route::get('/export/excel', [ExportController::class, 'excel'])->name('export.excel');
 
+    // AJAX: Daftar program studi berdasarkan jenjang pendidikan
+    Route::get('/api/majors', [EmployeeController::class, 'getMajors'])->name('api.majors');
+
+    // AJAX: Global search pegawai (header search bar)
+    Route::get('/api/employees/search', [EmployeeController::class, 'searchGlobal'])->name('api.employees.search');
+
+    // AJAX: Notifikasi data pegawai tidak lengkap
+    Route::get('/api/employees/incomplete', [EmployeeController::class, 'incompleteData'])->name('api.employees.incomplete');
+
     // Master Data (Read-only view)
     Route::get('/master-data', [MasterDataController::class, 'index'])->name('master.index');
+
+    // Akses Mobile QR Code
+    Route::get('/qr-access', [QrAccessController::class, 'index'])->name('qr-access.index');
 
     // ADMIN ONLY ROUTES
     Route::middleware(['role:admin'])->group(function () {
@@ -66,6 +86,13 @@ Route::middleware(['auth', 'active.user', 'last.login'])->group(function () {
 
         // Audit Logs
         Route::get('/audit-logs', [AuditLogController::class, 'index'])->name('audit-logs.index');
+
+        // Quick-add master data dari halaman filter
+        Route::post('/master-data/educations', [MasterDataController::class, 'storeEducation'])->name('master.educations.store');
+        Route::post('/master-data/ranks', [MasterDataController::class, 'storeRank'])->name('master.ranks.store');
+        Route::post('/master-data/positions', [MasterDataController::class, 'storePosition'])->name('master.positions.store');
+        Route::post('/master-data/work-units', [MasterDataController::class, 'storeWorkUnit'])->name('master.work-units.store');
+        Route::post('/master-data/employment-statuses', [MasterDataController::class, 'storeEmploymentStatus'])->name('master.employment-statuses.store');
     });
 
 });

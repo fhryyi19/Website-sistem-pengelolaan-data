@@ -1,7 +1,10 @@
 <aside class="fixed inset-y-0 left-0 z-40 flex w-64 flex-col border-r border-slate-100 bg-white dark:bg-white dark:border-zinc-100 transition-all duration-200 lg:translate-x-0"
        :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'">
-    <div class="flex h-16 items-center gap-2.5 border-b border-slate-100 dark:border-slate-100 px-5">
-        <img src="{{ asset('images/Logo BMKG.png') }}" alt="Logo BMKG" class="h-8 w-8 object-contain transition-transform duration-300 hover:rotate-12">
+    <div class="flex h-16 items-center gap-3 border-b border-slate-100 dark:border-slate-100 px-5">
+        <div class="flex flex-col items-center justify-center shrink-0">
+            <img src="{{ asset('images/Logo BMKG.png') }}" alt="Logo BMKG" class="h-7 w-7 object-contain transition-transform duration-300 hover:rotate-12">
+            <span class="text-[9px] font-bold text-black tracking-tight leading-none mt-0.5">BMKG</span>
+        </div>
         <a href="{{ route('dashboard') }}" class="text-sm font-semibold tracking-tight text-slate-900 dark:text-slate-900">
             BMKG KLAS 1 BANDUNG
         </a>
@@ -25,9 +28,19 @@
                                 'icon' => '<svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 0 0 2.625.372 9.337 9.337 0 0 0 4.121-.952 4.125 4.125 0 0 0-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.109A11.386 11.386 0 0 1 8.625 21c-2.14 0-4.14-.588-5.85-1.612v-.009a4.25 4.25 0 0 1 3.567-3.619 4.316 4.316 0 0 1 8.625.372a9.324 9.324 0 0 0 2.625-.372M12 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm6-1.5a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Z"/></svg>'
                             ],
                             [
+                                'route' => 'salary-history.index', 
+                                'label' => 'Kenaikan Gaji', 
+                                'icon' => '<svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18.75a60.07 60.07 0 0 1 15.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 0 1 3 6H2.25m0 0v8.25m0 0h19.5m-19.5 0v.75c0 .414.336.75.75.75H6m13.5-9.75h.75c.414 0 .75.336.75.75v.75m0 0H21m0 0v8.25m0 0h.75c.414 0 .75-.336.75-.75V15m-3-10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm-9 0a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/></svg>'
+                            ],
+                            [
                                 'route' => 'master.index', 
                                 'label' => 'Master Data', 
                                 'icon' => '<svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 13.5h3.86a2.25 2.25 0 0 1 2.008 1.24l.885 1.77a2.25 2.25 0 0 0 2.007 1.24h1.98a2.25 2.25 0 0 0 2.007-1.24l.885-1.77a2.25 2.25 0 0 1 2.007-1.24h3.86m-18 0h18m-18 0v-5.25A2.25 2.25 0 0 1 4.25 6h15.5A2.25 2.25 0 0 1 22 8.25v5.25m-18 0V18A2.25 2.25 0 0 0 6.25 20.25h11.5A2.25 2.25 0 0 0 20.25 18v-4.5m-14.25 0h12.5"/></svg>'
+                            ],
+                            [
+                                'route' => 'qr-access.index', 
+                                'label' => 'Akses Mobile', 
+                                'icon' => '<svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M10.5 1.5H8.25A2.25 2.25 0 0 0 6 3.75v16.5a2.25 2.25 0 0 0 2.25 2.25h7.5A2.25 2.25 0 0 0 18 20.25V3.75a2.25 2.25 0 0 0-2.25-2.25H13.5m-3 0V3h3V1.5m-3 0h3m-3 18.75h3"/></svg>'
                             ],
                         ];
                     @endphp
@@ -81,9 +94,7 @@
             <div x-data="{ open: false }" class="relative">
                 <button @click="open = !open" 
                         class="flex w-full items-center gap-3 rounded-lg p-2.5 hover:bg-slate-50 dark:hover:bg-slate-50 transition text-left focus:outline-none">
-                    <span class="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-blue-600 text-[10px] font-bold text-white shadow-sm shadow-blue-500/20">
-                        {{ strtoupper(substr(auth()->user()?->name ?? 'U', 0, 1)) }}
-                    </span>
+                    <img class="h-8 w-8 shrink-0 rounded-full object-cover border border-slate-200 shadow-sm" src="{{ auth()->user()?->avatar_url }}" alt="Avatar">
                     <span class="min-w-0 flex-1">
                         <span class="block truncate text-xs font-bold text-slate-800 dark:text-slate-800">{{ auth()->user()?->name }}</span>
                         <span class="block text-[10px] text-slate-400 dark:text-slate-400">Pengguna sistem</span>

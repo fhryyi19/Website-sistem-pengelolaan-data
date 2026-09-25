@@ -220,5 +220,37 @@
             Belum punya akun? <a href="{{ route('register') }}">Daftar</a>
         </p>
     </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const loginInput = document.getElementById('login');
+            const passInput = document.getElementById('password');
+            const rememberCheck = document.getElementById('remember');
+            const loginForm = document.querySelector('form');
+
+            // Load saved credentials if remember me was checked
+            if (localStorage.getItem('web_remember_credentials') === 'true') {
+                const savedLogin = localStorage.getItem('web_saved_login');
+                const savedPass = localStorage.getItem('web_saved_pass');
+                if (savedLogin) loginInput.value = savedLogin;
+                if (savedPass) passInput.value = savedPass;
+                if (rememberCheck) rememberCheck.checked = true;
+            }
+
+            // Save or clear credentials on form submit
+            if (loginForm) {
+                loginForm.addEventListener('submit', function () {
+                    if (rememberCheck && rememberCheck.checked) {
+                        localStorage.setItem('web_remember_credentials', 'true');
+                        localStorage.setItem('web_saved_login', loginInput.value);
+                        localStorage.setItem('web_saved_pass', passInput.value);
+                    } else {
+                        localStorage.removeItem('web_remember_credentials');
+                        localStorage.removeItem('web_saved_login');
+                        localStorage.removeItem('web_saved_pass');
+                    }
+                });
+            }
+        });
+    </script>
 </body>
 </html>

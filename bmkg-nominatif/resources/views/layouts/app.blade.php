@@ -26,6 +26,25 @@
                         {{ session('success') }}
                     </div>
                 @endif
+                @if (session('error'))
+                    <div class="mb-5 flex items-center gap-3 rounded-xl border border-red-200 bg-red-50 p-4 text-sm font-medium text-red-900" x-data="{ show: true }" x-show="show">
+                        <span class="grid h-6 w-6 place-items-center rounded-full bg-red-600 text-xs text-white">✕</span>
+                        {{ session('error') }}
+                    </div>
+                @endif
+                @if ($errors->any())
+                    <div class="mb-5 rounded-xl border border-red-200 bg-red-50 p-4 text-sm font-medium text-red-900">
+                        <div class="flex items-center gap-2 font-semibold mb-2">
+                            <span class="grid h-5 w-5 place-items-center rounded-full bg-red-600 text-xs text-white font-bold">!</span>
+                            <span>Terdapat kesalahan pada formulir:</span>
+                        </div>
+                        <ul class="list-disc list-inside space-y-1 text-xs text-red-700 ml-2">
+                            @foreach ($errors->all() as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                @endif
                 {{ $slot }}
             </main>
         </div>

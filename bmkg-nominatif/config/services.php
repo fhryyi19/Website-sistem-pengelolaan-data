@@ -35,4 +35,9 @@ return [
         ],
     ],
 
+    'mobile_sync' => [
+        'url' => env('MOBILE_SYNC_URL'),
+        'secret' => env('SYNC_WEBHOOK_SECRET'),
+    ],
+
 ];

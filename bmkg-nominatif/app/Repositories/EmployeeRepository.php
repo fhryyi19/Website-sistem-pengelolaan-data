@@ -53,6 +53,70 @@ class EmployeeRepository implements EmployeeRepositoryInterface
             });
         }
 
+        // ── Filter Pendidikan ──────────────────────────────────────────
+
+        // Filter jenjang: by level di tabel educations
+        if (!empty($filters['education_level'])) {
+            $query->whereHas('educations', fn($q) =>
+                $q->whereHas('education', fn($eq) =>
+                    $eq->where('level', $filters['education_level'])
+                )
+            );
+        }
+
+        // Filter program studi: by education_id spesifik
+        if (!empty($filters['education_id'])) {
+            $query->whereHas('educations', fn($q) =>
+                $q->where('education_id', $filters['education_id'])
+            );
+        }
+
+        if (!empty($filters['institution_name'])) {
+            $query->whereHas('educations', fn($q) =>
+                $q->where('institution_name', 'like', "%{$filters['institution_name']}%")
+            );
+        }
+
+        // ── Filter Riwayat Pangkat (historis, bukan hanya current) ─────
+
+        if (!empty($filters['rank_id_history'])) {
+            $query->whereHas('ranks', fn($q) =>
+                $q->where('rank_id', $filters['rank_id_history'])
+            );
+        }
+
+        if (!empty($filters['rank_date_from'])) {
+            $query->whereHas('ranks', fn($q) =>
+                $q->whereDate('effective_date', '>=', $filters['rank_date_from'])
+            );
+        }
+
+        if (!empty($filters['rank_date_to'])) {
+            $query->whereHas('ranks', fn($q) =>
+                $q->whereDate('effective_date', '<=', $filters['rank_date_to'])
+            );
+        }
+
+        // ── Filter Riwayat Jabatan (historis, bukan hanya current) ─────
+
+        if (!empty($filters['position_id_history'])) {
+            $query->whereHas('positions', fn($q) =>
+                $q->where('position_id', $filters['position_id_history'])
+            );
+        }
+
+        if (!empty($filters['position_date_from'])) {
+            $query->whereHas('positions', fn($q) =>
+                $q->whereDate('effective_date', '>=', $filters['position_date_from'])
+            );
+        }
+
+        if (!empty($filters['position_date_to'])) {
+            $query->whereHas('positions', fn($q) =>
+                $q->whereDate('effective_date', '<=', $filters['position_date_to'])
+            );
+        }
+
         $sortColumn = $filters['sort_by'] ?? 'full_name';
         $sortDirection = $filters['sort_dir'] ?? 'asc';
 
@@ -79,6 +143,7 @@ class EmployeeRepository implements EmployeeRepositoryInterface
             'positions.position',
             'positions.workUnit',
             'families.gender',
+            'salaryHistories',
             'createdBy',
             'updatedBy',
         ])->find($id);

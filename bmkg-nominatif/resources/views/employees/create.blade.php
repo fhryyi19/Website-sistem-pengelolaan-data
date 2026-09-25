@@ -74,15 +74,92 @@
             <div class="ep-tab-panel" id="tab-status">
                 <div class="ep-section-title" style="margin-top:2rem;"><span class="dot"></span>Kepegawaian & Penempatan</div>
                 <div class="ep-grid-2">
-                    <div class="ep-field"><label class="ep-label">Status Kepegawaian <span class="required">*</span></label>
-                        <select name="employment_status_id" required class="ep-select">
-                            @foreach ($employmentStatuses as $es)<option value="{{ $es->id }}">{{ $es->name }}</option>@endforeach
+                    <div class="ep-field"><label class="ep-label">Status Kepegawaian (Aktif / Pensiun / Nonaktif) <span class="required">*</span></label>
+                        <select id="employment_status_id" name="employment_status_id" required class="ep-select">
+                            <optgroup label="🟢 STATUS AKTIF">
+                                @foreach ($employmentStatuses->whereIn('code', ['PNS', 'CPNS', 'PPPK']) as $es)
+                                    <option value="{{ $es->id }}" {{ old('employment_status_id') == $es->id ? 'selected' : '' }}>Aktif - {{ $es->name }}</option>
+                                @endforeach
+                            </optgroup>
+                            <optgroup label="🟡 STATUS PENSIUN">
+                                @foreach ($employmentStatuses->where('code', 'PENSIUN') as $es)
+                                    <option value="{{ $es->id }}" {{ old('employment_status_id') == $es->id ? 'selected' : '' }}>Pensiun - {{ $es->name }}</option>
+                                @endforeach
+                            </optgroup>
+                            <optgroup label="🔴 STATUS NONAKTIF">
+                                @foreach ($employmentStatuses->whereIn('code', ['NONAKTIF', 'HONORER']) as $es)
+                                    <option value="{{ $es->id }}" {{ old('employment_status_id') == $es->id ? 'selected' : '' }}>Nonaktif - {{ $es->name }}</option>
+                                @endforeach
+                            </optgroup>
+                            @foreach ($employmentStatuses->whereNotIn('code', ['PNS', 'CPNS', 'PPPK', 'PENSIUN', 'NONAKTIF', 'HONORER']) as $es)
+                                <option value="{{ $es->id }}" {{ old('employment_status_id') == $es->id ? 'selected' : '' }}>{{ $es->name }}</option>
+                            @endforeach
                         </select>
                     </div>
                     <div class="ep-field"><label class="ep-label">Unit Kerja <span class="required">*</span></label>
                         <select name="work_unit_id" required class="ep-select">
-                            @foreach ($workUnits as $wu)<option value="{{ $wu->id }}">{{ $wu->name }}</option>@endforeach
+                            @foreach ($workUnits as $wu)<option value="{{ $wu->id }}" {{ old('work_unit_id') == $wu->id ? 'selected' : '' }}>{{ $wu->name }}</option>@endforeach
                         </select>
+                    </div>
+                </div>
+
+                {{-- Golongan / Pangkat Awal --}}
+                <div class="ep-subsection" style="margin-top:24px;">Golongan / Pangkat Awal</div>
+                <p style="font-size:11px; color:#64748B; margin: -10px 0 16px; line-height:1.6;">
+                    Pilih golongan/pangkat aktif saat ini. Data akan tersimpan ke riwayat pangkat dan dapat digunakan untuk filter pencarian.
+                </p>
+                <div class="ep-grid-2">
+                    <div class="ep-field">
+                        <label class="ep-label">Golongan / Pangkat</label>
+                        <select name="rank_id" class="ep-select">
+                            <option value="">— Pilih Golongan —</option>
+                            @foreach ($ranks as $r)
+                                <option value="{{ $r->id }}" {{ old('rank_id') == $r->id ? 'selected' : '' }}>{{ $r->display_name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="ep-field">
+                        <label class="ep-label">TMT Golongan (Tgl Efektif)</label>
+                        <input type="date" name="rank_effective_date" value="{{ old('rank_effective_date') }}" class="ep-input">
+                    </div>
+                    <div class="ep-field">
+                        <label class="ep-label">No. SK Pangkat</label>
+                        <input type="text" name="rank_decree_number" value="{{ old('rank_decree_number') }}"
+                               placeholder="Opsional" maxlength="100" class="ep-input">
+                    </div>
+                    <div class="ep-field">
+                        <label class="ep-label">Tgl SK Pangkat</label>
+                        <input type="date" name="rank_decree_date" value="{{ old('rank_decree_date') }}" class="ep-input">
+                    </div>
+                </div>
+
+                {{-- Jabatan Awal --}}
+                <div class="ep-subsection" style="margin-top:24px;">Jabatan Awal</div>
+                <p style="font-size:11px; color:#64748B; margin: -10px 0 16px; line-height:1.6;">
+                    Pilih jabatan yang sedang dijabat saat ini. Data akan tersimpan ke riwayat jabatan dan dapat digunakan untuk filter pencarian.
+                </p>
+                <div class="ep-grid-2">
+                    <div class="ep-field">
+                        <label class="ep-label">Jabatan</label>
+                        <select name="position_id" class="ep-select">
+                            <option value="">— Pilih Jabatan —</option>
+                            @foreach ($positions as $pos)
+                                <option value="{{ $pos->id }}" {{ old('position_id') == $pos->id ? 'selected' : '' }}>{{ $pos->display_name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="ep-field">
+                        <label class="ep-label">TMT Jabatan (Tgl Efektif)</label>
+                        <input type="date" name="position_effective_date" value="{{ old('position_effective_date') }}" class="ep-input">
+                    </div>
+                    <div class="ep-field">
+                        <label class="ep-label">No. SK Jabatan</label>
+                        <input type="text" name="position_decree_number" value="{{ old('position_decree_number') }}"
+                               placeholder="Opsional" maxlength="100" class="ep-input">
+                    </div>
+                    <div class="ep-field">
+                        <label class="ep-label">Tgl SK Jabatan</label>
+                        <input type="date" name="position_decree_date" value="{{ old('position_decree_date') }}" class="ep-input">
                     </div>
                 </div>
             </div>
@@ -99,11 +176,51 @@
                     <div class="ep-field"><label class="ep-label">Golongan PNS</label><input type="text" name="pns_rank" class="ep-input mono"></div>
                     <div class="ep-field"><label class="ep-label">TMT PNS</label><input type="date" name="pns_tmt" class="ep-input"></div>
                 </div>
-                <div class="ep-subsection">Pendidikan Formal</div>
+                <div class="ep-subsection">Pendidikan Formal Terakhir</div>
+                <p style="font-size:11px; color:#64748B; margin: -10px 0 16px; line-height:1.6;">
+                    Data pendidikan di bawah akan tersimpan sebagai riwayat pendidikan pegawai dan dapat digunakan untuk filter pencarian.
+                    Isi minimal <strong>Jenjang</strong> agar data terhubung ke sistem filter.
+                </p>
+                <div class="ep-grid-2">
+                    <div class="ep-field">
+                        <label class="ep-label">Jenjang Pendidikan</label>
+                        <select name="education_id" class="ep-select">
+                            <option value="">— Pilih Jenjang —</option>
+                            @foreach ($educations as $edu)
+                                <option value="{{ $edu->id }}" {{ old('education_id') == $edu->id ? 'selected' : '' }}>
+                                    {{ $edu->name }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="ep-field">
+                        <label class="ep-label">Tahun Lulus</label>
+                        <input type="number" name="year_graduated" value="{{ old('year_graduated') }}"
+                               placeholder="Cth: 2005" min="1950" max="{{ date('Y') }}" class="ep-input">
+                    </div>
+                    <div class="ep-field">
+                        <label class="ep-label">Kampus / Institusi</label>
+                        <input type="text" name="institution_name" value="{{ old('institution_name') }}"
+                               placeholder="Cth: Institut Teknologi Bandung" maxlength="200" class="ep-input">
+                    </div>
+                    <div class="ep-field">
+                        <label class="ep-label">Jurusan / Program Studi</label>
+                        <input type="text" name="major" value="{{ old('major') }}"
+                               placeholder="Cth: Meteorologi" maxlength="150" class="ep-input">
+                    </div>
+                    <div class="ep-field">
+                        <label class="ep-label">Nomor Ijazah</label>
+                        <input type="text" name="certificate_number" value="{{ old('certificate_number') }}"
+                               placeholder="Opsional" maxlength="100" class="ep-input">
+                    </div>
+                </div>
+
+                {{-- Kolom lama (edu_dinas, edu_kursus, dll) tetap ada di bawah untuk data nominatif --}}
+                <div class="ep-subsection" style="margin-top:24px;">Pendidikan Tambahan & Pelatihan</div>
                 <div class="ep-grid-2">
                     @foreach(['edu_dinas' => 'Pendidikan Dinas', 'edu_kursus' => 'Kursus', 'edu_ln' => 'Luar Negeri', 'edu_penjenjangan' => 'Penjenjangan'] as $name => $label)
-                        <div class="ep-field"><label class="ep-label">{{ $label }}</label><input type="text" name="{{ $name }}" class="ep-input"></div>
-                        <div class="ep-field"><label class="ep-label">Tahun</label><input type="number" name="{{ $name }}_year" class="ep-input"></div>
+                        <div class="ep-field"><label class="ep-label">{{ $label }}</label><input type="text" name="{{ $name }}" value="{{ old($name) }}" class="ep-input"></div>
+                        <div class="ep-field"><label class="ep-label">Tahun</label><input type="number" name="{{ $name }}_year" value="{{ old($name . '_year') }}" class="ep-input"></div>
                     @endforeach
                 </div>
             </div>

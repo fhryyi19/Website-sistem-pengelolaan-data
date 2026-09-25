@@ -2,6 +2,14 @@
 
 namespace App\Providers;
 
+use App\Models\Education;
+use App\Models\Employee;
+use App\Models\Position;
+use App\Models\Rank;
+use App\Models\SalaryHistory;
+use App\Models\User;
+use App\Models\WorkUnit;
+use App\Observers\MobileSyncObserver;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Facades\Date;
@@ -27,5 +35,9 @@ class AppServiceProvider extends ServiceProvider
 
         // Prevent mass assignment protection issues
         Model::unguard(false);
+
+        foreach ([Employee::class, WorkUnit::class, Position::class, Rank::class, Education::class, User::class, SalaryHistory::class] as $model) {
+            $model::observe(MobileSyncObserver::class);
+        }
     }
 }

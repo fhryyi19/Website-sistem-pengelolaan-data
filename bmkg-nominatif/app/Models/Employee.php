@@ -119,6 +119,11 @@ class Employee extends Model
         return $this->hasMany(EmployeeFamily::class);
     }
 
+    public function salaryHistories(): HasMany
+    {
+        return $this->hasMany(SalaryHistory::class)->orderByDesc('effective_date');
+    }
+
     public function currentRank(): \Illuminate\Database\Eloquent\Relations\HasOne
     {
         return $this->hasOne(EmployeeRank::class)->where('is_current', true)->with('rank');

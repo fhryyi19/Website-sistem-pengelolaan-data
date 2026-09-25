@@ -66,14 +66,17 @@ class ExcelDataSeeder extends Seeder
             $no   = trim((string)($row[1] ?? ''));
             $name = trim((string)($row[2] ?? ''));
 
-            if (is_numeric($no) && !empty($name)) {
+            if (is_numeric($no) && (int)$no >= 1 && (int)$no <= 50 && !empty($name) && !str_starts_with($name, '=')) {
                 $nextRow1 = $rows[$currentRow + 1] ?? [];
                 $nextRow2 = $rows[$currentRow + 2] ?? [];
 
                 $nipCandidate = trim((string)($nextRow1[2] ?? ''));
                 $nipClean = preg_replace('/[^0-9]/', '', $nipCandidate);
 
-                if (strlen($nipClean) === 18) {
+                if (strlen($nipClean) === 18 || (empty($nipClean) && (int)$no === 44)) {
+                    if (empty($nipClean)) {
+                        $nipClean = 'BMKG-' . str_pad($no, 4, '0', STR_PAD_LEFT);
+                    }
 
                     // 1. Parse Name Titles (Prefix, Main Name, Suffix)
                     $titleInfo = $this->parseNameTitles($name);

@@ -33,10 +33,16 @@ class UserController extends Controller
     {
         $this->authorize('create', User::class);
 
-        $user = $this->userService->createUser($request->validated());
+        try {
+            $user = $this->userService->createUser($request->validated());
 
-        return redirect()->route('users.index')
-            ->with('success', "User {$user->name} berhasil ditambahkan.");
+            return redirect()->route('users.index')
+                ->with('success', "User {$user->name} berhasil ditambahkan.");
+        } catch (\Exception $e) {
+            return redirect()->back()
+                ->withInput()
+                ->with('error', 'Gagal menambahkan user: ' . $e->getMessage());
+        }
     }
 
     public function update(UpdateUserRequest $request, int $id): RedirectResponse
@@ -44,10 +50,16 @@ class UserController extends Controller
         $userModel = User::findOrFail($id);
         $this->authorize('update', $userModel);
 
-        $user = $this->userService->updateUser($id, $request->validated());
+        try {
+            $user = $this->userService->updateUser($id, $request->validated());
 
-        return redirect()->route('users.index')
-            ->with('success', "User {$user->name} berhasil diperbarui.");
+            return redirect()->route('users.index')
+                ->with('success', "User {$user->name} berhasil diperbarui.");
+        } catch (\Exception $e) {
+            return redirect()->back()
+                ->withInput()
+                ->with('error', 'Gagal memperbarui user: ' . $e->getMessage());
+        }
     }
 
     public function resetPassword(Request $request, int $id): RedirectResponse
